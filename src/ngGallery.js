@@ -48,6 +48,18 @@
             }
           },
 
+          onGalleryKeydown: function (scope) {
+            return function () {
+              var dialogScope = scope;
+              if (event.keyCode === 37) {
+                dialogScope.prevImage();
+              }
+              else if (event.keyCode === 39) {
+                dialogScope.nextImage();
+              }
+            };
+          },
+
           setBodyPadding: function (width) {
             var originalBodyPadding = parseInt(($body.css('padding-right') || 0), 10);
             $body.css('padding-right', (originalBodyPadding + width) + 'px');
@@ -170,9 +182,9 @@
             var scope = angular.isObject(options.scope) ? options.scope.$new() : $rootScope.$new();
             var $dialog, $dialogParent;
 
-            var images = options.images;
+            scope.images = options.images;
 
-            $q.when(loadImages(images)).then(function (template) {
+            $q.when(loadImages(scope.images)).then(function (template) {
 
               if (options.showClose) {
                 template += '<div class="nggallery-close"></div>';
@@ -182,10 +194,7 @@
               $dialog.html('<div class="nggallery-overlay"></div><div class="nggallery-content">' + template + '</div>');
 
 
-              scope.changeImage = function () {
-                privateMethods.closeDialog($dialog);
-              };
-
+              
 
               if (options.controller && (angular.isString(options.controller) || angular.isArray(options.controller) || angular.isFunction(options.controller))) {
                 var controllerInstance = $controller(options.controller, {
@@ -195,37 +204,37 @@
                 $dialog.data('$ngGalleryControllerController', controllerInstance);
               }
 
-              if (options.className) {
-                $dialog.addClass(options.className);
-              }
-
               if (options.appendTo && angular.isString(options.appendTo)) {
                 $dialogParent = angular.element(document.querySelector(options.appendTo));
               } else {
                 $dialogParent = $body;
               }
 
-              if (options.preCloseCallback) {
-                var preCloseCallback;
+              scope.visibleID = 0;
 
-                if (angular.isFunction(options.preCloseCallback)) {
-                  preCloseCallback = options.preCloseCallback;
-                } else if (angular.isString(options.preCloseCallback)) {
-                  if (scope) {
-                    if (angular.isFunction(scope[options.preCloseCallback])) {
-                      preCloseCallback = scope[options.preCloseCallback];
-                    } else if (scope.$parent && angular.isFunction(scope.$parent[options.preCloseCallback])) {
-                      preCloseCallback = scope.$parent[options.preCloseCallback];
-                    } else if ($rootScope && angular.isFunction($rootScope[options.preCloseCallback])) {
-                      preCloseCallback = $rootScope[options.preCloseCallback];
+              scope.nextImage = function () {
+                 $timeout(function() {
+                    if (scope.visibleID === scope.images.length - 1) {
+                      scope.closeThisDialog();
+                    } else {
+                      scope.visibleID += 1;
                     }
-                  }
-                }
+                  }, 0);
+              };
 
-                if (preCloseCallback) {
-                  $dialog.data('$ngGalleryPreCloseCallback', preCloseCallback);
+              scope.prevImage = function () {
+                 $timeout(function() {
+                  if (scope.visibleID !== 0) {
+                    scope.visibleID -= 1;
+                  }
+                 }, 0);
+              };
+
+              scope.closeGallery = function (event) {
+                if ($el(event.target).hasClass('gallery-item') === true) {
+                  scope.closeThisDialog();
                 }
-              }
+              };
 
               scope.closeThisDialog = function (value) {
                 privateMethods.closeDialog($dialog, value);
@@ -252,6 +261,7 @@
               if (options.closeByEscape) {
                 $body.bind('keydown', privateMethods.onDocumentKeydown);
               }
+              $body.bind('keydown', privateMethods.onGalleryKeydown(scope));
               
               if (options.closeByNavigation) {
                 $rootScope.$on('$locationChangeSuccess', function () {
@@ -289,11 +299,10 @@
 
 
             function loadImages (images) {
-              // do something with images
-              var template = '<div class="gallery" data-ng-click="changeImage()">';
-              images.forEach(function (img) {
-                template += '<span class="helper"></span><span class="gallery-item" data-ng-click="try()"><img src="' + img + '"/></span>';
-              });
+              var template = '<div class="gallery">';
+              for (var i = 0; i < images.length; ++i) {
+                template += '<div class="gallery-item" data-ng-show="visibleID === ' + i + '" data-ng-click="closeGallery($event)"><span class="helper"></span><span  data-ng-click="nextImage()"><img src="' + images[i] + '"/></span></div>';
+              }
               template += '</div>';
               return template;
             }
