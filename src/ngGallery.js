@@ -15,6 +15,7 @@
     var defaults = this.defaults = {
       className: 'nggallery-theme-default',
       showClose: true,
+      prefix: '',
       closeByDocument: true,
       closeByEscape: true,
       closeByNavigation: false,
@@ -301,7 +302,7 @@
             function loadImages (images) {
               var template = '<div class="gallery">';
               for (var i = 0; i < images.length; ++i) {
-                template += '<div class="gallery-item" data-ng-show="visibleID === ' + i + '" data-ng-click="closeGallery($event)"><span class="helper"></span><span  data-ng-click="nextImage()"><img src="' + images[i] + '"/></span></div>';
+                template += '<div class="gallery-item" data-ng-show="visibleID === ' + i + '" data-ng-click="closeGallery($event)"><span class="helper"></span><span  data-ng-click="nextImage()"><img src="' + options.prefix + images[i] + '"/></span></div>';
               }
               template += '</div>';
               return template;
@@ -400,8 +401,9 @@
           ngGallery.open({
             className: attrs.ngGalleryClass || defaults.className,
             controller: attrs.ngGalleryController,
-            scope: ngGalleryScope ,
+            scope: ngGalleryScope,
             data: attrs.ngGalleryData,
+            prefix: attrs.ngGalleryPrefix,
             showClose: attrs.ngGalleryShowClose === 'false' ? false : (attrs.ngGalleryShowClose === 'true' ? true : defaults.showClose),
             closeByDocument: attrs.ngGalleryCloseByDocument === 'false' ? false : (attrs.ngGalleryCloseByDocument === 'true' ? true : defaults.closeByDocument),
             closeByEscape: attrs.ngGalleryCloseByEscape === 'false' ? false : (attrs.ngGalleryCloseByEscape === 'true' ? true : defaults.closeByEscape),

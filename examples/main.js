@@ -11,19 +11,20 @@ app.controller('MainController', function (ngGallery) {
       template: '<p>Hello</p>',
       plain: true,
       images: [
-        './img/dw_1.jpg',
-        './img/dw_2.jpg',
-        './img/dw_3.gif',
-        './img/dw_4.jpg',
-        './img/dw_5.jpg',
-        './img/dw_6.gif',
-        './img/dw_7.jpg',
-        './img/dw_8.jpg',
-        './img/dw_9.jpg',
-        './img/dw_10.jpg',
-        './img/dw_11.jpg',
-        './img/dw_12.jpg'
+        'dw_1.jpg',
+        'dw_2.jpg',
+        'dw_3.gif',
+        'dw_4.jpg',
+        'dw_5.jpg',
+        'dw_6.gif',
+        'dw_7.jpg',
+        'dw_8.jpg',
+        'dw_9.jpg',
+        'dw_10.jpg',
+        'dw_11.jpg',
+        'dw_12.jpg'
       ],
+      prefix: './img/',
       showClose: true,
       closeByEscape: true
     });
