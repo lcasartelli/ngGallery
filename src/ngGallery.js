@@ -27,7 +27,8 @@
       appendTo: false,
       preCloseCallback: false,
       url: false,
-      infiniteLoop: false
+      infiniteLoop: false,
+      timing: false
     };
 
     this.setForceBodyReload = function (_useIt) {
@@ -40,8 +41,8 @@
 
     var globalID = 0, dialogsCount = 0, closeByDocumentHandler, defers = {};
 
-    this.$get = ['$document', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller',
-      function ($document, $compile, $q, $http, $rootScope, $timeout, $window, $controller) {
+    this.$get = ['$document', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$interval',
+      function ($document, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $interval) {
         var $body = $document.find('body');
         if (forceBodyReload) {
           $rootScope.$on('$locationChangeSuccess', function () {
@@ -198,7 +199,6 @@
               self.$result = $dialog = $el('<div id="nggallery' + globalID + '" class="nggallery"></div>');
               $dialog.html('<div class="nggallery-overlay"></div><div class="nggallery-content">' + template + '</div>');
 
-
               
 
               if (options.controller && (angular.isString(options.controller) || angular.isArray(options.controller) || angular.isFunction(options.controller))) {
@@ -217,8 +217,12 @@
 
               scope.visibleID = 0;
 
-              scope.nextImage = function () {
-                 $timeout(function() {
+              scope.nextImage = function (byInterval) {
+                  $timeout(function() {
+                    if (byInterval !== true && scope.interval !== undefined) {
+                      scope.clearInterval(scope.interval);
+                      scope.setChangeInterval();
+                    }
                     if (scope.visibleID === scope.images.length - 1 ) {
                       if (options.infiniteLoop) {
                         scope.visibleID = 0;
@@ -245,6 +249,17 @@
                  }, 0);
               };
 
+              scope.setChangeInterval = function() {
+                scope.interval = $interval(function() {
+                  scope.nextImage(true);
+                }, options.timing);
+              };
+
+              scope.clearInterval = function(interval) {
+                // TO DO add check if interval really is a promise
+                $interval.cancel(interval);
+              }
+
               scope.closeGallery = function (event) {
                 if ($el(event.target).hasClass('gallery-item') === true) {
                   scope.closeThisDialog();
@@ -253,6 +268,9 @@
 
               scope.closeThisDialog = function (value) {
                 privateMethods.closeDialog($dialog, value);
+                if(scope.interval !== undefined) {
+                  scope.clearInterval(scope.interval);
+                }
               };
 
               $timeout(function () {
@@ -272,6 +290,10 @@
                   $rootScope.$broadcast('ngGallery.opened', $dialog);
                 }
               });
+
+              if (options.timing !== false && options.timing > 0) {
+                scope.setChangeInterval();  
+              }
 
               if (options.closeByEscape) {
                 $body.bind('keydown', privateMethods.onDocumentKeydown);
