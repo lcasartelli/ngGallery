@@ -306,11 +306,11 @@
                 }
                 template += '</div>';
                 return template;
-              }
+              };
               if(url !== false) {
                 return $http.get(url).then(function(result) {
                   return _generateTemplate(result.data);
-                }, function(data, status) {
+                }, function(error) {
                   // emit error;
                 });
               } else {
