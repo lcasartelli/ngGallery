@@ -96,6 +96,30 @@
   animation: nggallery-fadein 0.5s;
 }
 
+.gallery-close-btn {
+  position: absolute;
+  top: 2%;
+  left: 2%;
+}
+
+.gallery-next-btn {
+  
+}
+
+.gallery-prev-btn {
+  margin-right: 10px; 
+}
+
+
+.gallery-prev-next-container {
+  position: absolute;
+  top: 93%;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+}
+
 .nggallery.nggallery-closing .nggallery-overlay {
   -webkit-backface-visibility: hidden;
   -webkit-animation: nggallery-fadeout 0.5s;

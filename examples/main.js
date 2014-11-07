@@ -26,7 +26,10 @@ app.controller('MainController', function (ngGallery) {
       ],
       prefix: './img/',
       showClose: true,
-      closeByEscape: true
+      closeByEscape: true,
+      closeLabel: 'close',
+      nextLabel: 'next',
+      prevLabel: 'prev'
     });
   };
 });
