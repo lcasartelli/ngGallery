@@ -26,7 +26,8 @@
       closeByNavigation: false,
       appendTo: false,
       preCloseCallback: false,
-      url: false
+      url: false,
+      circular: false
     };
 
     this.setForceBodyReload = function (_useIt) {
@@ -219,8 +220,12 @@
               scope.nextImage = function () {
                  $timeout(function() {
                     if (scope.visibleID === scope.images.length - 1 ) {
-                      if (options.closeByNavigation) {
-                        scope.closeThisDialog();
+                      if (options.circular) {
+                        scope.visibleID = 0;
+                      } else {
+                        if (options.closeByNavigation) {
+                          scope.closeThisDialog();
+                        }
                       }
                     } else {
                       scope.visibleID += 1;
@@ -232,6 +237,10 @@
                  $timeout(function() {
                   if (scope.visibleID !== 0) {
                     scope.visibleID -= 1;
+                  } else {
+                    if(options.circular) {
+                      scope.visibleID = scope.images.length - 1;
+                    }
                   }
                  }, 0);
               };
