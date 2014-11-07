@@ -20,7 +20,8 @@
       closeByEscape: true,
       closeByNavigation: false,
       appendTo: false,
-      preCloseCallback: false
+      preCloseCallback: false,
+      url: false
     };
 
     this.setForceBodyReload = function (_useIt) {
@@ -89,7 +90,7 @@
               $body.unbind('keydown');
             }
 
-            if (!$dialog.hasClass("nggallery-closing")) {
+            if (!$dialog.hasClass('nggallery-closing')) {
               dialogsCount -= 1;
             }
 
@@ -183,10 +184,7 @@
             var scope = angular.isObject(options.scope) ? options.scope.$new() : $rootScope.$new();
             var $dialog, $dialogParent;
 
-            scope.images = options.images;
-
-            $q.when(loadImages(scope.images)).then(function (template) {
-
+            $q.when(loadImages(options.url, options.images)).then(function (template) {
               if (options.showClose) {
                 template += '<div class="nggallery-close"></div>';
               }
@@ -299,13 +297,25 @@
             };
 
 
-            function loadImages (images) {
-              var template = '<div class="gallery">';
-              for (var i = 0; i < images.length; ++i) {
-                template += '<div class="gallery-item" data-ng-show="visibleID === ' + i + '" data-ng-click="closeGallery($event)"><span class="helper"></span><span  data-ng-click="nextImage()"><img src="' + options.prefix + images[i] + '"/></span></div>';
+            function loadImages (url, images) {
+              var _generateTemplate = function (images) {
+                scope.images = images;
+                var template = '<div class="gallery">';
+                for (var i = 0; i < images.length; ++i) {
+                  template += '<div class="gallery-item" data-ng-show="visibleID === ' + i + '" data-ng-click="closeGallery($event)"><span class="helper"></span><span  data-ng-click="nextImage()"><img src="' + options.prefix + images[i] + '"/></span></div>';
+                }
+                template += '</div>';
+                return template;
               }
-              template += '</div>';
-              return template;
+              if(url !== false) {
+                return $http.get(url).then(function(result) {
+                  return _generateTemplate(result.data);
+                }, function(data, status) {
+                  // emit error;
+                });
+              } else {
+                return _generateTemplate(images);
+              }
             }
           },
 
