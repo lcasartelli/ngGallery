@@ -27,7 +27,7 @@
       appendTo: false,
       preCloseCallback: false,
       url: false,
-      circular: false
+      infiniteLoop: false
     };
 
     this.setForceBodyReload = function (_useIt) {
@@ -220,7 +220,7 @@
               scope.nextImage = function () {
                  $timeout(function() {
                     if (scope.visibleID === scope.images.length - 1 ) {
-                      if (options.circular) {
+                      if (options.infiniteLoop) {
                         scope.visibleID = 0;
                       } else {
                         if (options.closeByNavigation) {
@@ -238,7 +238,7 @@
                   if (scope.visibleID !== 0) {
                     scope.visibleID -= 1;
                   } else {
-                    if(options.circular) {
+                    if(options.infiniteLoop) {
                       scope.visibleID = scope.images.length - 1;
                     }
                   }

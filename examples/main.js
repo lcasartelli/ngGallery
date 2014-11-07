@@ -30,7 +30,7 @@ app.controller('MainController', function (ngGallery) {
       closeLabel: 'close',
       nextLabel: 'next',
       prevLabel: 'prev',
-      circular: true
+      infiniteLoop: true
     });
   };
 });
