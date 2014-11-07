@@ -318,6 +318,8 @@
               dialogsCount += 1;
 
               return publicMethods;
+            }).catch(function(error) {
+              console.log('error', error);
             });
 
             return {
@@ -343,7 +345,7 @@
                 return $http.get(url).then(function(result) {
                   return _generateTemplate(result.data);
                 }, function(error) {
-                  // emit error;
+                  throw "Oh no! Something failed!";
                 });
               } else {
                 return _generateTemplate(images);
