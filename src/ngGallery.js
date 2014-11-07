@@ -13,7 +13,6 @@
 
   module.provider('ngGallery', function () {
     var defaults = this.defaults = {
-      className: 'nggallery-theme-default',
       showClose: true,
       prefix: '',
       prevClass: '',
@@ -219,8 +218,10 @@
 
               scope.nextImage = function () {
                  $timeout(function() {
-                    if (scope.visibleID === scope.images.length - 1) {
-                      scope.closeThisDialog();
+                    if (scope.visibleID === scope.images.length - 1 ) {
+                      if (options.closeByNavigation) {
+                        scope.closeThisDialog();
+                      }
                     } else {
                       scope.visibleID += 1;
                     }
@@ -267,12 +268,6 @@
                 $body.bind('keydown', privateMethods.onDocumentKeydown);
               }
               $body.bind('keydown', privateMethods.onGalleryKeydown(scope));
-              
-              if (options.closeByNavigation) {
-                $rootScope.$on('$locationChangeSuccess', function () {
-                  privateMethods.closeDialog($dialog);
-                });
-              }
 
               closeByDocumentHandler = function (event) {
                 var isOverlay = options.closeByDocument ? $el(event.target).hasClass('nggallery-overlay') : false;
@@ -415,7 +410,6 @@
           var defaults = ngGallery.getDefaults();
 
           ngGallery.open({
-            className: attrs.ngGalleryClass || defaults.className,
             controller: attrs.ngGalleryController,
             scope: ngGalleryScope,
             data: attrs.ngGalleryData,
