@@ -16,6 +16,12 @@
       className: 'nggallery-theme-default',
       showClose: true,
       prefix: '',
+      prevClass: '',
+      nextClass: '',
+      prevLabel: '<',
+      nextLabel: '>',
+      closeLabel: 'x',
+      closeClass: '',
       closeByDocument: true,
       closeByEscape: true,
       closeByNavigation: false,
@@ -300,11 +306,11 @@
             function loadImages (url, images) {
               var _generateTemplate = function (images) {
                 scope.images = images;
-                var template = '<div class="gallery">';
+                var template = '<div class="gallery"><button class="gallery-close-btn ' + options.closeClass + '" data-ng-click="closeThisDialog()">' + options.closeLabel + '</button>';
                 for (var i = 0; i < images.length; ++i) {
                   template += '<div class="gallery-item" data-ng-show="visibleID === ' + i + '" data-ng-click="closeGallery($event)"><span class="helper"></span><span  data-ng-click="nextImage()"><img src="' + options.prefix + images[i] + '"/></span></div>';
                 }
-                template += '</div>';
+                template += '<div class="gallery-prev-next-container"><button class="gallery-prev-btn ' + options.prevClass + '" data-ng-click="prevImage()">' + options.prevLabel + '</button><button class="gallery-next-btn ' + options.nextClass + '" data-ng-click="nextImage()">' + options.nextLabel + '</button></div></div>';
                 return template;
               };
               if(url !== false) {
@@ -413,6 +419,12 @@
             controller: attrs.ngGalleryController,
             scope: ngGalleryScope,
             data: attrs.ngGalleryData,
+            prevClass: attrs.ngGalleryPrevClass,
+            nextClass: attrs.ngGalleryNextClass,
+            prevLabel: attrs.ngGalleryPrevLabel,
+            nextLabel: attrs.ngGalleryNextLabel,
+            closeLabel: attrs.ngGalleryCloseLabel,
+            closeClass: attrs.ngGalleryCloseClass,
             prefix: attrs.ngGalleryPrefix,
             showClose: attrs.ngGalleryShowClose === 'false' ? false : (attrs.ngGalleryShowClose === 'true' ? true : defaults.showClose),
             closeByDocument: attrs.ngGalleryCloseByDocument === 'false' ? false : (attrs.ngGalleryCloseByDocument === 'true' ? true : defaults.closeByDocument),
