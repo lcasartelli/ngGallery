@@ -26,7 +26,9 @@
       closeByNavigation: false,
       appendTo: false,
       preCloseCallback: false,
-      url: false
+      url: false,
+      infiniteLoop: false,
+      timing: false
     };
 
     this.setForceBodyReload = function (_useIt) {
@@ -39,8 +41,8 @@
 
     var globalID = 0, dialogsCount = 0, closeByDocumentHandler, defers = {};
 
-    this.$get = ['$document', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller',
-      function ($document, $compile, $q, $http, $rootScope, $timeout, $window, $controller) {
+    this.$get = ['$document', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$interval',
+      function ($document, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $interval) {
         var $body = $document.find('body');
         if (forceBodyReload) {
           $rootScope.$on('$locationChangeSuccess', function () {
@@ -197,7 +199,6 @@
               self.$result = $dialog = $el('<div id="nggallery' + globalID + '" class="nggallery"></div>');
               $dialog.html('<div class="nggallery-overlay"></div><div class="nggallery-content">' + template + '</div>');
 
-
               
 
               if (options.controller && (angular.isString(options.controller) || angular.isArray(options.controller) || angular.isFunction(options.controller))) {
@@ -216,11 +217,19 @@
 
               scope.visibleID = 0;
 
-              scope.nextImage = function () {
-                 $timeout(function() {
+              scope.nextImage = function (byInterval) {
+                  $timeout(function() {
+                    if (byInterval !== true && scope.interval !== undefined) {
+                      scope.clearInterval(scope.interval);
+                      scope.setChangeInterval();
+                    }
                     if (scope.visibleID === scope.images.length - 1 ) {
-                      if (options.closeByNavigation) {
-                        scope.closeThisDialog();
+                      if (options.infiniteLoop) {
+                        scope.visibleID = 0;
+                      } else {
+                        if (options.closeByNavigation) {
+                          scope.closeThisDialog();
+                        }
                       }
                     } else {
                       scope.visibleID += 1;
@@ -232,9 +241,24 @@
                  $timeout(function() {
                   if (scope.visibleID !== 0) {
                     scope.visibleID -= 1;
+                  } else {
+                    if(options.infiniteLoop) {
+                      scope.visibleID = scope.images.length - 1;
+                    }
                   }
                  }, 0);
               };
+
+              scope.setChangeInterval = function() {
+                scope.interval = $interval(function() {
+                  scope.nextImage(true);
+                }, options.timing);
+              };
+
+              scope.clearInterval = function(interval) {
+                // TO DO add check if interval really is a promise
+                $interval.cancel(interval);
+              }
 
               scope.closeGallery = function (event) {
                 if ($el(event.target).hasClass('gallery-item') === true) {
@@ -244,6 +268,9 @@
 
               scope.closeThisDialog = function (value) {
                 privateMethods.closeDialog($dialog, value);
+                if(scope.interval !== undefined) {
+                  scope.clearInterval(scope.interval);
+                }
               };
 
               $timeout(function () {
@@ -263,6 +290,10 @@
                   $rootScope.$broadcast('ngGallery.opened', $dialog);
                 }
               });
+
+              if (options.timing !== false && options.timing > 0) {
+                scope.setChangeInterval();  
+              }
 
               if (options.closeByEscape) {
                 $body.bind('keydown', privateMethods.onDocumentKeydown);
@@ -287,6 +318,8 @@
               dialogsCount += 1;
 
               return publicMethods;
+            }).catch(function(error) {
+              console.log('error', error);
             });
 
             return {
@@ -307,12 +340,12 @@
                 }
                 template += '<div class="gallery-prev-next-container"><button class="gallery-prev-btn ' + options.prevClass + '" data-ng-click="prevImage()">' + options.prevLabel + '</button><button class="gallery-next-btn ' + options.nextClass + '" data-ng-click="nextImage()">' + options.nextLabel + '</button></div></div>';
                 return template;
-              }
+              };
               if(url !== false) {
                 return $http.get(url).then(function(result) {
                   return _generateTemplate(result.data);
                 }, function(error) {
-                  // emit error;
+                  throw "Oh no! Something failed!";
                 });
               } else {
                 return _generateTemplate(images);
