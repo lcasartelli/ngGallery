@@ -1,0 +1,14 @@
+{
+  "browser":true,
+  "devel": true,
+  "indent":2,
+  "white":true,
+  "laxcomma":true,
+  "strict":true,
+  "unused":true,
+  "eqnull":true,
+  "camelcase": false,
+  "trailing": true,
+  "globals": {"angular": false},
+  "globalstrict": true
+}

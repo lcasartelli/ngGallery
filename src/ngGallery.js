@@ -9,7 +9,6 @@
   var style = (document.body || document.documentElement).style;
   var animationEndSupport = isDef(style.animation) || isDef(style.WebkitAnimation) || isDef(style.MozAnimation) || isDef(style.MsAnimation) || isDef(style.OAnimation);
   var animationEndEvent = 'animationend webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend';
-  var forceBodyReload = false;
 
   module.provider('ngGallery', function () {
     var defaults = this.defaults = {
@@ -31,9 +30,6 @@
       timing: false
     };
 
-    this.setForceBodyReload = function (_useIt) {
-      forceBodyReload = _useIt || false;
-    };
 
     this.setDefaults = function (newDefaults) {
       angular.extend(defaults, newDefaults);
@@ -44,11 +40,6 @@
     this.$get = ['$document', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$interval',
       function ($document, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $interval) {
         var $body = $document.find('body');
-        if (forceBodyReload) {
-          $rootScope.$on('$locationChangeSuccess', function () {
-            $body = $document.find('body');
-          });
-        }
 
         var privateMethods = {
           onDocumentKeydown: function (event) {
@@ -258,10 +249,10 @@
               scope.clearInterval = function(interval) {
                 // TO DO add check if interval really is a promise
                 $interval.cancel(interval);
-              }
+              };
 
               scope.closeGallery = function (event) {
-                if ($el(event.target).hasClass('gallery-item') === true) {
+                if ($el(event.target).hasClass('gallery-item')) {
                   scope.closeThisDialog();
                 }
               };
@@ -291,7 +282,7 @@
                 }
               });
 
-              if (options.timing !== false && options.timing > 0) {
+              if (options.timing && options.timing > 0) {
                 scope.setChangeInterval();  
               }
 
@@ -330,25 +321,28 @@
               }
             };
 
+            function generateTemplate(images) {
+              scope.images = images;
+              var template = '<div class="gallery"><button class="gallery-close-btn ' + options.closeClass + '" data-ng-click="closeThisDialog()">' + options.closeLabel + '</button>';
+              for (var i = 0; i < images.length; ++i) {
+                template += '<div class="gallery-item animate-show" data-ng-show="visibleID === ' + i + '" data-ng-click="closeGallery($event)"><span class="helper"></span><span  data-ng-click="nextImage()"><img src="' + options.prefix + images[i] + '"/></span></div>';
+              }
+              template += '<div class="gallery-prev-next-container"><button class="gallery-prev-btn ' + options.prevClass + '" data-ng-click="prevImage()">' + options.prevLabel + '</button><button class="gallery-next-btn ' + options.nextClass + '" data-ng-click="nextImage()">' + options.nextLabel + '</button></div></div>';
+              return template;
+            }
 
-            function loadImages (url, images) {
-              var _generateTemplate = function (images) {
-                scope.images = images;
-                var template = '<div class="gallery"><button class="gallery-close-btn ' + options.closeClass + '" data-ng-click="closeThisDialog()">' + options.closeLabel + '</button>';
-                for (var i = 0; i < images.length; ++i) {
-                  template += '<div class="gallery-item animate-show" data-ng-show="visibleID === ' + i + '" data-ng-click="closeGallery($event)"><span class="helper"></span><span  data-ng-click="nextImage()"><img src="' + options.prefix + images[i] + '"/></span></div>';
-                }
-                template += '<div class="gallery-prev-next-container"><button class="gallery-prev-btn ' + options.prevClass + '" data-ng-click="prevImage()">' + options.prevLabel + '</button><button class="gallery-next-btn ' + options.nextClass + '" data-ng-click="nextImage()">' + options.nextLabel + '</button></div></div>';
-                return template;
-              };
+
+            function loadImages(url, images) {
+          
               if(url !== false) {
                 return $http.get(url).then(function(result) {
-                  return _generateTemplate(result.data);
-                }, function(error) {
-                  throw "Oh no! Something failed!";
+                  return generateTemplate(result.data);
+                }, function(err) {
+                  console.error(err);
+                  throw 'Oh no! Something failed!';
                 });
               } else {
-                return _generateTemplate(images);
+                return generateTemplate(images);
               }
             }
           },
@@ -438,7 +432,6 @@
           e.preventDefault();
 
           var ngGalleryScope = angular.isDefined(scope.ngGalleryScope) ? scope.ngGalleryScope : 'noScope';
-          angular.isDefined(attrs.ngGalleryClosePrevious) && ngGallery.close(attrs.ngGalleryClosePrevious);
 
           var defaults = ngGallery.getDefaults();
 
@@ -453,9 +446,9 @@
             closeLabel: attrs.ngGalleryCloseLabel,
             closeClass: attrs.ngGalleryCloseClass,
             prefix: attrs.ngGalleryPrefix,
-            showClose: attrs.ngGalleryShowClose === 'false' ? false : (attrs.ngGalleryShowClose === 'true' ? true : defaults.showClose),
-            closeByDocument: attrs.ngGalleryCloseByDocument === 'false' ? false : (attrs.ngGalleryCloseByDocument === 'true' ? true : defaults.closeByDocument),
-            closeByEscape: attrs.ngGalleryCloseByEscape === 'false' ? false : (attrs.ngGalleryCloseByEscape === 'true' ? true : defaults.closeByEscape),
+            showClose: !attrs.ngGalleryShowClose ? false : (attrs.ngGalleryShowClose ? true : defaults.showClose),
+            closeByDocument: !attrs.ngGalleryCloseByDocument ? false : (attrs.ngGalleryCloseByDocument ? true : defaults.closeByDocument),
+            closeByEscape: !attrs.ngGalleryCloseByEscape ? false : (attrs.ngGalleryCloseByEscape ? true : defaults.closeByEscape),
             preCloseCallback: attrs.ngGalleryPreCloseCallback || defaults.preCloseCallback
           });
         });
