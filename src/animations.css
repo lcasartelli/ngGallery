@@ -1,0 +1,32 @@
+.animate.ng-enter,
+.animate.ng-leave,
+.animate.ng-move {
+  -webkit-transition: 0.7s linear all;
+  -moz-transition: 0.7s linear all;
+  -o-transition: 0.7s linear all;
+  transition: 0.7s linear all;
+  position: relative;
+}
+.animate.ng-enter,
+.animate.ng-leave.ng-leave-active {
+  opacity: 0;
+}
+.animate.ng-enter.ng-enter-active,
+.animate.ng-leave,
+.animate.ng-move.ng-move-active {
+  opacity: 1;
+}
+.animate.ng-move {
+  opacity: 0.5;
+}
+.animate-show {
+  -webkit-transition: 0.4s linear all;
+  -moz-transition: 0.4s linear all;
+  -o-transition: 0.4s linear all;
+  transition: 0.4s linear all;
+  opacity: 1;
+  position: relative;
+}
+.animate-show.ng-hide {
+  opacity: 0;
+}

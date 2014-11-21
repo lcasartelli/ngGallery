@@ -2,7 +2,7 @@
 (function (window, angular, undefined) {
   'use strict';
 
-  var module = angular.module('ngGallery', []);
+  var module = angular.module('ngGallery', ['ngAnimate']);
 
   var $el = angular.element;
   var isDef = angular.isDefined;
@@ -303,7 +303,7 @@
                 scope.images = images;
                 var template = '<div class="gallery"><button class="gallery-close-btn ' + options.closeClass + '" data-ng-click="closeThisDialog()">' + options.closeLabel + '</button>';
                 for (var i = 0; i < images.length; ++i) {
-                  template += '<div class="gallery-item" data-ng-show="visibleID === ' + i + '" data-ng-click="closeGallery($event)"><span class="helper"></span><span  data-ng-click="nextImage()"><img src="' + options.prefix + images[i] + '"/></span></div>';
+                  template += '<div class="gallery-item animate-show" data-ng-show="visibleID === ' + i + '" data-ng-click="closeGallery($event)"><span class="helper"></span><span  data-ng-click="nextImage()"><img src="' + options.prefix + images[i] + '"/></span></div>';
                 }
                 template += '<div class="gallery-prev-next-container"><button class="gallery-prev-btn ' + options.prevClass + '" data-ng-click="prevImage()">' + options.prevLabel + '</button><button class="gallery-next-btn ' + options.nextClass + '" data-ng-click="nextImage()">' + options.nextLabel + '</button></div></div>';
                 return template;

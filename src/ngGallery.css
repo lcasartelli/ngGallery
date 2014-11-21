@@ -150,3 +150,27 @@
 body.nggallery-open {
   overflow: hidden;
 }
+
+/* Animations */
+
+.animate-show.ng-enter,
+.animate-show.ng-leave,
+.animate-show.ng-move {
+  -webkit-transition: 0.2s linear all;
+  -moz-transition: 0.2s linear all;
+  -o-transition: 0.2s linear all;
+  transition: 0.2s linear all;
+  position: relative;
+}
+.animate-show.ng-enter,
+.animate-show.ng-leave.ng-leave-active {
+  opacity: 0;
+}
+.animate-show.ng-enter.ng-enter-active,
+.animate-show.ng-leave,
+.animate-show.ng-move.ng-move-active {
+  opacity: 1;
+}
+.animate-show.ng-move {
+  opacity: 0.5;
+}
