@@ -25,10 +25,6 @@ app.controller('MainCtrl', function (ngGallery) {
 });
 ```
 
-## References
-
-Heavily inspired by [ngDialog](https://github.com/likeastore/ngDialog).
-
 ## License
 
 MIT Licensed
