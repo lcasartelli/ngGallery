@@ -61,12 +61,36 @@ module.provider 'ngGallery', [() ->
       template += '<div class="gallery-prev-next-container"><button class="gallery-prev-btn ' + options.prevClass + '" data-ng-click="prevImage()">' + options.prevLabel + '</button><button class="gallery-next-btn ' + options.nextClass + '" data-ng-click="nextImage()">' + options.nextLabel + '</button></div></div>'
 
 
+    inject = (template) ->
+      htmlNode = $el '<div id="nggallery' + globalID + '" class="nggallery"></div>'
+      if htmlNode?
+        htmlNode.html '<div class="nggallery-overlay"></div><div class="nggallery-content">' + template + '</div>'
+      else
+        # todo: handle error
+
     @open = (opts = {}) ->
       $log.info 'Hello lemon! :)'
 
       options = angular.extend {}, defaults, opts
 
       globalID = global.incGlobalID()
+
+      if opts.url? and url_regex.test opts.url
+        _loadParam = opts.url
+      else
+        _loadParam = opts.images
+
+
+      _template = ''
+
+      if showClose
+        _template += '<div class="nggallery-close"></div>'
+
+      ($q.when loadImages _loadParam).then (tmpl) ->
+        _template += tmpl
+        # inject template
+        inject _template
+
 
   ]
 ]

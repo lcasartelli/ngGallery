@@ -1,29 +1,53 @@
 
 module = angular.module 'ngGallery'
 
-module.service 'ngGalleryNav', ['$document', ($document) ->
+module.service 'ngGalleryNav', ['$document', '$interval', ($document, $interval) ->
 
-  @LEFT_ARROW_KEY = 37
-  @RIGHT_ARROW_KEY = 39
-  @ESC_KEY = 27
+  @transitionDelay = 0 # delay next/prev transition
+  @interval = null
 
-
-  onKeyDown = (event) ->
-    if event.keyCode is @LEFT_ARROW_KEY
-      @handler.prevImage()
-      
-    else if event.keyCode is @RIGHT_ARROW_KEY
-      @handler.nextImage()
-
-    if event.keyCode is @ESC_KEY
-      @handler.close '$escape'
+  addDelay = (fn) ->
+    if byInterval
+      $timeout fn, @transitionDelay
+    else
+      fn
 
 
-  # Exposed methods
+  @next = () =>
+    _next = () => 
+      # do something
 
-  @bind = (actions) ->
-    @handler = actions
-    body = $document.find 'body'
-    if body?
-      body.bind 'keydown', onKeyDown
+    (addDelay _next)()
+
+
+  @prev = () =>
+    _prev = () =>
+      # do something
+
+    (addDelay _prev)()
+
+
+  startAuto = (ms) =>
+    # start auto play
+    @interval = $interval (() => @next()), ms
+
+
+  stopAuto = () =>
+    if @interval?
+      $interval.cancel interval
+
+  @close = (dialog) =>
+    # cleanInterval
+    stopAuto()
+
+    # view performCloseDialog source
+    
+
+
+
+
+  @bind = () =>
+    if opts.timing > 0
+      auto opts.timing
+
 ]
