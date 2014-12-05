@@ -11,54 +11,56 @@
   var animationEndEvent = 'animationend webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend';
 
   module.provider('ngGallery', function () {
-    var defaults = this.defaults = {
-      showClose: true,
-      prefix: '',
-      prevClass: '',
-      nextClass: '',
-      prevLabel: '<',
-      nextLabel: '>',
-      closeLabel: 'x',
-      closeClass: '',
-      closeByDocument: true,
-      closeByEscape: true,
-      closeByNavigation: false,
-      appendTo: false,
-      preCloseCallback: false,
-      url: false,
-      infiniteLoop: false,
-      timing: false
-    };
+    // var defaults = this.defaults = {
+    //   showClose: true,
+    //   prefix: '',
+    //   prevClass: '',
+    //   nextClass: '',
+    //   prevLabel: '<',
+    //   nextLabel: '>',
+    //   closeLabel: 'x',
+    //   closeClass: '',
+    //   closeByDocument: true,
+    //   closeByEscape: true,
+    //   closeByNavigation: false,
+    //   appendTo: false,
+    //   preCloseCallback: false,
+    //   url: false,
+    //   infiniteLoop: false,
+    //   timing: false
+    // };
 
 
-    this.setDefaults = function (newDefaults) {
-      angular.extend(defaults, newDefaults);
-    };
+    // this.setDefaults = function (newDefaults) {
+    //   angular.extend(defaults, newDefaults);
+    // };
 
-    var globalID = 0, dialogsCount = 0, closeByDocumentHandler, defers = {};
+    //var globalID = 0
+    var closeByDocumentHandler, 
+    //var defers = {};
 
     this.$get = ['$document', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$interval',
       function ($document, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $interval) {
         var $body = $document.find('body');
 
         var privateMethods = {
-          onDocumentKeydown: function (event) {
-            if (event.keyCode === 27) {
-              publicMethods.close('$escape');
-            }
-          },
+          // onDocumentKeydown: function (event) {
+          //   if (event.keyCode === 27) {
+          //     publicMethods.close('$escape');
+          //   }
+          // },
 
-          onGalleryKeydown: function (scope) {
-            return function () {
-              var dialogScope = scope;
-              if (event.keyCode === 37) {
-                dialogScope.prevImage();
-              }
-              else if (event.keyCode === 39) {
-                dialogScope.nextImage();
-              }
-            };
-          },
+          // onGalleryKeydown: function (scope) {
+          //   return function () {
+          //     var dialogScope = scope;
+          //     if (event.keyCode === 37) {
+          //       dialogScope.prevImage();
+          //     }
+          //     else if (event.keyCode === 39) {
+          //       dialogScope.nextImage();
+          //     }
+          //   };
+          // },
 
           setBodyPadding: function (width) {
             var originalBodyPadding = parseInt(($body.css('padding-right') || 0), 10);
@@ -166,20 +168,21 @@
            * @return {Object} dialog
            */
           open: function (opts) {
-            var self = this;
-            var options = angular.copy(defaults);
+            // var self = this;
+            // var options = angular.copy(defaults);
 
-            opts = opts || {};
-            angular.extend(options, opts);
+            // opts = opts || {};
+            // angular.extend(options, opts);
 
-            globalID += 1;
+            //globalID += 1;
 
-            self.latestID = 'nggallery' + globalID;
+            // self.latestID = 'nggallery' + globalID;
 
-            var defer;
-            defers[self.latestID] = defer = $q.defer();
+            // var defer;
+            // defers[self.latestID] = defer = $q.defer();
 
-            var scope = angular.isObject(options.scope) ? options.scope.$new() : $rootScope.$new();
+            //var scope = angular.isObject(options.scope) ? options.scope.$new() : $rootScope.$new();
+            var scope = this;
             var $dialog, $dialogParent;
 
             $q.when(loadImages(options.url, options.images)).then(function (template) {
@@ -361,32 +364,32 @@
            *
            * @return {Object} dialog
            */
-          openConfirm: function (opts) {
-            var defer = $q.defer();
+          // openConfirm: function (opts) {
+          //   var defer = $q.defer();
 
-            var options = {
-              closeByEscape: false,
-              closeByDocument: false
-            };
-            angular.extend(options, opts);
+          //   var options = {
+          //     closeByEscape: false,
+          //     closeByDocument: false
+          //   };
+          //   angular.extend(options, opts);
 
-            options.scope = angular.isObject(options.scope) ? options.scope.$new() : $rootScope.$new();
-            options.scope.confirm = function (value) {
-              defer.resolve(value);
-              var $dialog = $el(document.getElementById(openResult.id));
-              privateMethods.performCloseDialog($dialog, value);
-            };
+          //   options.scope = angular.isObject(options.scope) ? options.scope.$new() : $rootScope.$new();
+          //   options.scope.confirm = function (value) {
+          //     defer.resolve(value);
+          //     var $dialog = $el(document.getElementById(openResult.id));
+          //     privateMethods.performCloseDialog($dialog, value);
+          //   };
 
-            var openResult = publicMethods.open(options);
-            openResult.closePromise.then(function (data) {
-              if (data) {
-                return defer.reject(data.value);
-              }
-              return defer.reject();
-            });
+          //   var openResult = publicMethods.open(options);
+          //   openResult.closePromise.then(function (data) {
+          //     if (data) {
+          //       return defer.reject(data.value);
+          //     }
+          //     return defer.reject();
+          //   });
 
-            return defer.promise;
-          },
+          //   return defer.promise;
+          // },
 
           /*
            * @param {String} id
@@ -421,39 +424,39 @@
       }];
   });
 
-  module.directive('ngGallery', ['ngGallery', function (ngGallery) {
-    return {
-      restrict: 'A',
-      scope : {
-        ngGalleryScope : '='
-      },
-      link: function (scope, elem, attrs) {
-        elem.on('click', function (e) {
-          e.preventDefault();
+  // module.directive('ngGallery', ['ngGallery', function (ngGallery) {
+  //   return {
+  //     restrict: 'A',
+  //     scope : {
+  //       ngGalleryScope : '='
+  //     },
+  //     link: function (scope, elem, attrs) {
+  //       elem.on('click', function (e) {
+  //         e.preventDefault();
 
-          var ngGalleryScope = angular.isDefined(scope.ngGalleryScope) ? scope.ngGalleryScope : 'noScope';
+  //         var ngGalleryScope = angular.isDefined(scope.ngGalleryScope) ? scope.ngGalleryScope : 'noScope';
 
-          var defaults = ngGallery.getDefaults();
+  //         var defaults = ngGallery.getDefaults();
 
-          ngGallery.open({
-            controller: attrs.ngGalleryController,
-            scope: ngGalleryScope,
-            data: attrs.ngGalleryData,
-            prevClass: attrs.ngGalleryPrevClass,
-            nextClass: attrs.ngGalleryNextClass,
-            prevLabel: attrs.ngGalleryPrevLabel,
-            nextLabel: attrs.ngGalleryNextLabel,
-            closeLabel: attrs.ngGalleryCloseLabel,
-            closeClass: attrs.ngGalleryCloseClass,
-            prefix: attrs.ngGalleryPrefix,
-            showClose: !attrs.ngGalleryShowClose ? false : (attrs.ngGalleryShowClose ? true : defaults.showClose),
-            closeByDocument: !attrs.ngGalleryCloseByDocument ? false : (attrs.ngGalleryCloseByDocument ? true : defaults.closeByDocument),
-            closeByEscape: !attrs.ngGalleryCloseByEscape ? false : (attrs.ngGalleryCloseByEscape ? true : defaults.closeByEscape),
-            preCloseCallback: attrs.ngGalleryPreCloseCallback || defaults.preCloseCallback
-          });
-        });
-      }
-    };
-  }]);
+  //         ngGallery.open({
+  //           controller: attrs.ngGalleryController,
+  //           scope: ngGalleryScope,
+  //           data: attrs.ngGalleryData,
+  //           prevClass: attrs.ngGalleryPrevClass,
+  //           nextClass: attrs.ngGalleryNextClass,
+  //           prevLabel: attrs.ngGalleryPrevLabel,
+  //           nextLabel: attrs.ngGalleryNextLabel,
+  //           closeLabel: attrs.ngGalleryCloseLabel,
+  //           closeClass: attrs.ngGalleryCloseClass,
+  //           prefix: attrs.ngGalleryPrefix,
+  //           showClose: !attrs.ngGalleryShowClose ? false : (attrs.ngGalleryShowClose ? true : defaults.showClose),
+  //           closeByDocument: !attrs.ngGalleryCloseByDocument ? false : (attrs.ngGalleryCloseByDocument ? true : defaults.closeByDocument),
+  //           closeByEscape: !attrs.ngGalleryCloseByEscape ? false : (attrs.ngGalleryCloseByEscape ? true : defaults.closeByEscape),
+  //           preCloseCallback: attrs.ngGalleryPreCloseCallback || defaults.preCloseCallback
+  //         });
+  //       });
+  //     }
+  //   };
+  // }]);
 
 })(window, window.angular);
