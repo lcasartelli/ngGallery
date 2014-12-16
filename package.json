@@ -1,14 +1,13 @@
 {
   "name": "ngGallery",
   "version": "0.0.2",
-  "description": "ngGallery =========",
+  "description": "ngGallery",
   "main": "",
   "directories": {
     "example": "examples"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": ""
+    "build": "grunt"
   },
   "repository": {
     "type": "git",
@@ -16,12 +15,17 @@
   },
   "authors": [
     "Luca Casartelli <lc.casartelli@gmail.com>",
-    "Giacomo Consonni <giacomo.consonni@gmail.com>"], 
+    "Giacomo Consonni <giacomo.consonni@gmail.com>"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/lcasartelli/ngGallery/issues"
   },
   "homepage": "https://github.com/lcasartelli/ngGallery",
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-coffee": "^0.12.0",
+    "grunt-contrib-watch": "^0.6.1"
+  }
 }

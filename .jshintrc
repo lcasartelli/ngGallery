@@ -1,0 +1,14 @@
+{
+  "node": true,
+  "indent": 2,
+  "white": true,
+  "laxcomma": true,
+  "undef": true,
+  "strict": true,
+  "unused": true,
+  "eqnull": true,
+  "camelcase": false,
+  "trailing": true,
+  "lastsemic": true,
+  "noyield": true
+}

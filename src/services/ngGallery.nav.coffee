@@ -3,51 +3,82 @@ module = angular.module 'ngGallery'
 
 module.service 'ngGalleryNav', ['$document', '$interval', ($document, $interval) ->
 
+  @visibleItemIndex = 0
+  @itemsNum = 0
+  
   @transitionDelay = 0 # delay next/prev transition
+
   @interval = null
+  @timing = 0
+
+  @infiniteLoop = no
+
+  @closeByNavigation = no
 
   addDelay = (fn) ->
-    if byInterval
-      $timeout fn, @transitionDelay
+    if @transitionDelay > 0
+      () ->
+        $timeout fn, @transitionDelay
     else
       fn
 
 
   @next = () =>
-    _next = () => 
-      # do something
+    _next = () =>
+      console.log @visibleItemIndex
+      if @visibleItemIndex is @itemsNum
+        if @infiniteLoop
+          @visibleItemIndex = 0
+        else
+          if @closeByNavigation
+            stopAuto()
+            #scope.closeThisDialog()
+            # todo: fix close
+      else
+        @visibleItemIndex += 1
 
     (addDelay _next)()
 
 
   @prev = () =>
     _prev = () =>
-      # do something
+       if @visibleItemIndex isnt 0
+          @visibleItemIndex -= 1
+        else
+          if @infiniteLoop
+            @visibleItemIndex = @itemsNum
 
     (addDelay _prev)()
 
 
-  startAuto = (ms) =>
+  startAuto = () =>
     # start auto play
-    @interval = $interval (() => @next()), ms
+    @interval = $interval (() => @next()), @timing
 
 
   stopAuto = () =>
     if @interval?
-      $interval.cancel interval
+      $interval.cancel @interval
 
   @close = (dialog) =>
     # cleanInterval
     stopAuto()
 
     # view performCloseDialog source
-    
 
 
+  @bind = (opts) =>
+    @transitionDelay = opts.transitionDelay
+    @timing = opts.timing
+    @infiniteLoop = opts.infiniteLoop
+    @itemsNum = opts.images.length  - 1
+    @closeByNavigation = opts.closeByNavigation
+
+    console.log 'num', @itemsNum
+
+    if @timing > 0
+      startAuto()
 
 
-  @bind = () =>
-    if opts.timing > 0
-      auto opts.timing
-
+  return
 ]

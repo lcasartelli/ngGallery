@@ -14,4 +14,6 @@ module.service 'ngGalleryGlobal', [() ->
 
   @globalID = () ->
     globalID
+
+  return
 ]
