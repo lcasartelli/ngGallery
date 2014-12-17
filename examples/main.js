@@ -7,9 +7,7 @@ var app = angular.module('TestApp', ['ngGallery']);
 app.controller('MainController', function (ngGallery) {
   
   this.open = function () {
-    ngGallery.open({ 
-      template: '<p>Hello</p>',
-      plain: true,
+    ngGallery.open({
       images: [
         'dw_1.jpg',
         'dw_2.jpg',
@@ -32,7 +30,7 @@ app.controller('MainController', function (ngGallery) {
       prevLabel: 'prev',
       closeByNavigation: true,
       infiniteLoop: false,
-      timing: 1000
+      timing: 0
     });
   };
 });

@@ -30,10 +30,11 @@ module.provider('ngGallery', function() {
     preCloseCallback: false
   };
   this.$get = [
-    '$rootScope', '$document', '$http', '$log', '$q', 'ngGalleryGlobal', 'ngGalleryKey', 'ngGalleryNav', function($rootScope, $document, $http, $log, $q, global, keys, nav) {
+    '$rootScope', '$document', '$compile', '$http', '$log', '$q', 'ngGalleryGlobal', 'ngGalleryKey', 'ngGalleryNav', function($rootScope, $document, $compile, $http, $log, $q, global, keys, nav) {
       var $body, generateTemplate, inject, loadImages;
       $body = $document.find('body');
       this.images = [];
+      this.nav = nav;
       loadImages = (function(_this) {
         return function(param, opts) {
           var errorFn, successFn;
@@ -56,29 +57,49 @@ module.provider('ngGallery', function() {
       })(this);
       generateTemplate = (function(_this) {
         return function(opts) {
-          var image, imageTemplate, template, _i, _len, _ref;
-          template = '<div class="gallery"><button class="gallery-close-btn ' + opts.closeClass + '" data-ng-click="closeThisDialog()">' + opts.closeLabel + '</button>';
-          imageTemplate = function(image, i) {
-            return template += '<div class="gallery-item animate-show" data-ng-show="nav.visibleItemIndex === ' + i + '" data-ng-click="closeGallery($event)"><span class="helper"></span><span  data-ng-click="nav.next()"><img src="' + opts.prefix + image + '"/></span></div>';
+          var i, image, imageTemplate, template, _i, _len, _ref;
+          _this.visibleItemIndex = 0;
+          _this.closeGallery = function() {
+            return console.log('aaa');
+          };
+          _this.next = function() {
+            return console.log('111');
+          };
+          _this.prev = function() {
+            return console.log('222');
+          };
+          _this.close = function() {
+            return console.log('close');
+          };
+          template = '<div class="gallery"><button class="gallery-close-btn ' + opts.closeClass + '" data-ng-click="close()">' + opts.closeLabel + '</button>';
+          imageTemplate = function(images, i) {
+            return template += '<div class="gallery-item animate-show" data-ng-click="next()" ><span class="helper"></span><span  ><img src="' + opts.prefix + image + '"/></span></div>';
           };
           _ref = _this.images;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            image = _ref[_i];
-            imageTemplate(image);
+          for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+            image = _ref[i];
+            imageTemplate(image, i);
           }
-          return template += '<div class="gallery-prev-next-container"><button class="gallery-prev-btn ' + opts.prevClass + '" data-ng-click="nav.prev()">' + opts.prevLabel + '</button><button class="gallery-next-btn ' + opts.nextClass + '" data-ng-click="nav.next()">' + opts.nextLabel + '</button></div></div>';
+          return template += '<div class="gallery-prev-next-container"><button class="gallery-prev-btn ' + opts.prevClass + '" data-ng-click="closeGallery()">' + opts.prevLabel + '</button><button class="gallery-next-btn ' + opts.nextClass + '" data-ng-click="next()">' + opts.nextLabel + '</button></div></div>';
         };
       })(this);
-      inject = function(template) {
-        var htmlNode;
-        htmlNode = $el('<div id="nggallery' + global.globalID() + '" class="nggallery"></div>');
-        if (htmlNode != null) {
-          htmlNode.html('<div class="nggallery-overlay"></div><div class="nggallery-content">' + template + '</div>');
-          return $body.append(htmlNode);
-        } else {
+      inject = (function(_this) {
+        return function(template) {
+          var htmlNode;
+          htmlNode = $el('<div id="nggallery' + global.globalID() + '" class="nggallery"></div>');
+          if (htmlNode != null) {
+            htmlNode.html('<div class="nggallery-overlay"></div><div class="nggallery-content">' + template + '</div>');
+            $body.append(htmlNode);
+            setTimeout((function() {
+              return ($compile(htmlNode))(_this);
+            }), 10);
+            console.log(_this);
+            return null;
+          } else {
 
-        }
-      };
+          }
+        };
+      })(this);
       this.open = function(opts) {
         var options, _loadParam, _template;
         if (opts == null) {
@@ -96,18 +117,19 @@ module.provider('ngGallery', function() {
         if (options.showClose) {
           _template += '<div class="nggallery-close"></div>';
         }
-        return ($q.when(loadImages(_loadParam, options))).then(function(tmpl) {
+        return $q.when(loadImages(_loadParam, options)).then(function(tmpl) {
           _template += tmpl;
-          inject(_template);
           nav.bind(options);
           keys.bind(options);
+          inject(_template);
           return $rootScope.$emit('ngGallery-opened', {
             id: global.globalID()
           });
         });
       };
       return {
-        open: this.open
+        open: this.open,
+        nav: this.nav
       };
     }
   ];
@@ -234,6 +256,9 @@ module.service('ngGalleryNav', [
         return stopAuto();
       };
     })(this);
+    this.closeGallery = function() {
+      return console.log('do something');
+    };
     this.bind = (function(_this) {
       return function(opts) {
         _this.transitionDelay = opts.transitionDelay;

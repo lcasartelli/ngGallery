@@ -67,6 +67,9 @@ module.service 'ngGalleryNav', ['$document', '$interval', ($document, $interval)
     # view performCloseDialog source
 
 
+  @closeGallery = ()->
+    console.log 'do something'
+
   @bind = (opts) =>
     @transitionDelay = opts.transitionDelay
     @timing = opts.timing
