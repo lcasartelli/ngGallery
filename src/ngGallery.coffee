@@ -16,7 +16,7 @@ module.provider 'ngGallery', () ->
     prevLabel: '<',
     nextLabel: '>',
     closeLabel: 'x',
-    closeClass: '',aaa
+    closeClass: '',
     url: false,
     infiniteLoop: false,
     timing: 0
